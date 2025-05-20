@@ -14,6 +14,8 @@
 #define RDW_ADD   0x08   //RDW 通道线性向上扫描寄存器
 #define FDW_ADD   0x09   //FDW 通道线性向下扫描寄存器
 
+#define AD9959_FREQ ((uint64_t)500000000)
+
 /* AD9959 Control Pin Macros */
 #define CS(a)          HAL_GPIO_WritePin(AD9959_CS_GPIO_Port, AD9959_CS_Pin, (a))  // Chip Select (active low, default HIGH)
 #define SCLK(a)        HAL_GPIO_WritePin(GPIOB, AD9959_SCK_Pin, (a))               // Serial Clock (SCK)
@@ -29,9 +31,19 @@
 #define AD9959_PWR(a)  HAL_GPIO_WritePin(GPIOE, AD9959_PDC_Pin, (a))               // Power-Down Control (HIGH = normal operation)
 #define Reset(a)       HAL_GPIO_WritePin(GPIOE, AD9959_RST_Pin, (a))               // Hardware Reset (active HIGH)
 
-extern uint32_t SinFre[4];
-extern uint16_t SinPhr[4];
-extern uint16_t SinAmp[4];
+
+typedef struct{
+	uint32_t freq[4];
+	uint16_t phase[4];
+	uint16_t amp[4];
+	uint8_t changeFlag;
+	
+}AD9959_HandleTypeDef;
+
+//extern uint32_t SinFre[4];
+//extern uint16_t SinPhr[4];
+//extern uint16_t SinAmp[4];
+extern AD9959_HandleTypeDef hAD9959;
 
 
 void delay1 (uint32_t length);
@@ -42,6 +54,15 @@ void Init_AD9959(void);
 void Write_frequence(uint8_t Channel,uint32_t Freq);
 void Write_Amplitude(uint8_t Channel, uint16_t Ampli);
 void Write_Phase(uint8_t Channel,uint16_t Phase);
+
+uint8_t AD9959_Set_Phase(AD9959_HandleTypeDef* had9959, uint16_t channel, float* data);
+
+uint8_t AD9959_Set_Freq(AD9959_HandleTypeDef* had9959, uint16_t channel, uint32_t* data);
+
+uint8_t AD9959_Set_Amp(AD9959_HandleTypeDef* had9959, uint16_t channel, uint16_t* data);
+
+uint8_t AD9959_Apply_Change(AD9959_HandleTypeDef* had9959);
+
 
 #endif
 

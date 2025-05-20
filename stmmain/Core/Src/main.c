@@ -18,13 +18,19 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "dac.h"
 #include "rtc.h"
 #include "spi.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+
+#include "AD9959.H"
+#include "AM_9959.h"
+#include "delay.h"
 
 /* USER CODE END Includes */
 
@@ -97,7 +103,15 @@ int main(void)
   MX_RTC_Init();
   MX_SPI3_Init();
   MX_USART1_UART_Init();
+  MX_TIM6_Init();
+  MX_DAC_Init();
   /* USER CODE BEGIN 2 */
+  AM_Init();
+  AM_Instance* AM_PTRS[2]={&AM1, &AM2};
+  delay_init();
+  
+  
+  
 	SPI_LCD_Init();
 	syslog("LCD Init Success");
 	initRingBuffer();		
@@ -114,53 +128,74 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+
+	AM_SetModulationFreq(&AM1,2000000);
   while (1)
   {
-		while (usize >= FRAME_LENGTH)
+	  
+		
+	  
+		while (getRingBufferLength() >= FRAME_LENGTH)
 		{
 			
-			if (usize >= FRAME_LENGTH && u(0) == 0x55 && u(4) == 0xff && u(5) == 0xff && u(6) == 0xff)
+			if (getRingBufferLength() >= FRAME_LENGTH && 
+				read1ByteFromRingBuffer(0) == 0x55 && 
+			read1ByteFromRingBuffer(4) == 0xFF && 
+			read1ByteFromRingBuffer(5) == 0xFF &&
+			read1ByteFromRingBuffer(6) == 0xFF)//检查帧头及帧尾
 			{
-				
-				if (u(1) == 0x00)
+				uint8_t operation_flag=read1ByteFromRingBuffer(1);
+				if (operation_flag == 0x00)
 				{
-					freq=u(2);
+					freq=read1ByteFromRingBuffer(2);
 					sprintf(str,"Cfreq changed to %d MHz",freq);syslog(str);
+					
+					uint32_t cfreq=freq*1000000;
+					AM_SetCarrierFreq(&AM1, cfreq);
+					AM_SetCarrierFreq(&AM2, cfreq);
 				} 
-				else if (u(1) == 0x01)
+				else if (operation_flag == 0x01)
 				{
-					amp=u(2);
+					amp=read1ByteFromRingBuffer(2);
 					sprintf(str,"EffValue changed to %d00mV",amp);syslog(str);
 				} 
-				else if (u(1) == 0x02)
+				else if (operation_flag == 0x02)
 				{
-					md=u(2);
+					md=read1ByteFromRingBuffer(2);
 					sprintf(str,"ModuDepth changed to %d %%",md);syslog(str);
+					
+					float MD=((float)md)/100;
+					AM_SetMDepth(&AM1,MD);
+					AM_SetMDepth(&AM2,MD);
 				} 
-				else if (u(1) == 0x03)
+				else if (operation_flag == 0x03)
 				{
-					tdelay=u(2);
+					tdelay=read1ByteFromRingBuffer(2);
 					sprintf(str,"Bsig delay changed to %d0ns",tdelay);syslog(str);
+					
+					uint16_t TD=tdelay*10;
+					AM_SetTDelay(&AM1,&AM2,TD);
 				} 
-				else if (u(1) == 0x04)
+				else if (operation_flag == 0x04)
 				{
-					atten=u(2);
+					atten=read1ByteFromRingBuffer(2);
 					sprintf(str,"Bsig atten changed to %ddb",atten);syslog(str);
 				} 
-				else if (u(1) == 0x05)
+				else if (operation_flag == 0x05)
 				{
-					sphase=u(2);
+					sphase=read1ByteFromRingBuffer(2);
 					sprintf(str,"Bsig delay changed to %d0°",sphase);syslog(str);
 				} 
-				udelete(7); 
+				deleteRingBuffer(7); 
 			} else
 			{
-				udelete(1);
+				deleteRingBuffer(1);
 				break;
 			}
 		}
 	LED;
-	HAL_Delay(200);
+	AM_ApplyChanges(AM_PTRS,2);
+	HAL_Delay(1);
 	}
     /* USER CODE END WHILE */
 
