@@ -3,7 +3,9 @@
 
 
 AM_Instance AM1,AM2;
-
+/*
+初始化AM实例
+*/
 void AM_Instance_Init(AM_Instance* ham, AD9959_HandleTypeDef* had9959, uint16_t chcw, uint16_t chmw, DAC_HandleTypeDef* hdacx, uint32_t dac_channel)
 {
 	ham->CH_CW=chcw;
@@ -12,12 +14,13 @@ void AM_Instance_Init(AM_Instance* ham, AD9959_HandleTypeDef* had9959, uint16_t 
 	ham->TDelay=0;
 	ham->had9959=had9959;
 	ham->hdac=hdacx;
-	ham->CH_ADC=dac_channel;
+	ham->CH_DAC=dac_channel;
 	ham->changeflag=0;
+	ham->min_amp=AD9959_GetMinAmp(0,40);
 }
 
 /*
-初始化AM实例
+初始化本题中用到的AM
 */
 uint8_t AM_Init(void)
 {
@@ -26,6 +29,9 @@ uint8_t AM_Init(void)
 	HAL_DACEx_DualStart(&AM_DAC_HANDLE);
 	AM_Instance_Init(&AM1,&hAD9959,0,1,&hdac,DAC_CHANNEL_1);
 	AM_Instance_Init(&AM2,&hAD9959,2,3,&hdac,DAC_CHANNEL_2);
+	
+	
+	
 	
 	return HAL_OK;
 
@@ -52,13 +58,22 @@ uint8_t AM_ApplyChanges(AM_Instance* hamx[], uint16_t cnt)
 		datafloat=((double)(hamx[i]->had9959->freq[hamx[i]->CH_CW])*360*(hamx[i]->TDelay)/1000000000);
 		AD9959_Set_Phase(hamx[i]->had9959,hamx[i]->CH_CW,&datafloat);
 		
-		data16=1023;
-		AD9959_Set_Amp(hamx[i]->had9959, hamx[i]->CH_CW, &data16);
-		data16=data16*(hamx[i]->MDepth);
-		AD9959_Set_Amp(hamx[i]->had9959, hamx[i]->CH_MW, &data16);
-		
+				
 		data32=2000000;
 		AD9959_Set_Freq(hamx[i]->had9959, hamx[i]->CH_MW, &data32);
+		
+		
+		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_CW]);
+		data16=(uint16_t)datafloat;
+		
+		AD9959_Set_Amp(hamx[i]->had9959, hamx[i]->CH_CW, &data16);
+		
+		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_MW])*(hamx[i]->MDepth);
+		data16=(uint16_t)datafloat;
+
+		AD9959_Set_Amp(hamx[i]->had9959, hamx[i]->CH_MW, &data16);
+		
+
 	}
 
 	for(uint16_t i=0;i<cnt;i++)
@@ -115,7 +130,7 @@ uint8_t AM_SetMDepth(AM_Instance* hamx, float MD)
 hamxx1的时间偏移被设置为0，hamx2的时间偏移被设置为TD
 TD:  延时，单位ns
 */
-uint8_t AM_SetTDelay(AM_Instance* hamx1, AM_Instance* hamx2, float TD)
+uint8_t AM_SetTDelay(AM_Instance* hamx1, AM_Instance* hamx2, uint16_t TD)
 {
 	hamx1->TDelay=0;
 	hamx2->TDelay=TD;
@@ -126,7 +141,7 @@ uint8_t AM_SetTDelay(AM_Instance* hamx1, AM_Instance* hamx2, float TD)
 
 uint8_t SetDAC(AM_Instance* hamx, uint16_t val)
 {
-	HAL_DAC_SetValue(hamx->hdac,hamx->CH_ADC,DAC_ALIGN_12B_R,val>4096?4096:val);
+	HAL_DAC_SetValue(hamx->hdac,hamx->CH_DAC,DAC_ALIGN_12B_R,val>4096?4096:val);
 	DAC_Trigger(&hdac);
 	return HAL_OK;
 }

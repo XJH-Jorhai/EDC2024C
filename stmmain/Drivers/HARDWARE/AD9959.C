@@ -161,37 +161,54 @@ Function: Set output frequency
 Channel: Output channel (0-3)
 Freq: Output frequency
 ---------------------------------------*/
+#define AD9959_USE_SNAPPING
+#ifdef AD9959_USE_SNAPPING
+	#define AD9959_SNAPPING_GRID ((uint32_t)100000)
+#endif
+
 void Write_frequence(uint8_t Channel, uint32_t Freq)
 {	 
-  uint8_t CFTW0_DATA[4] = {0x00,0x00,0x00,0x00};
-  uint32_t Temp;            
-  Temp = (((double)((uint64_t)Freq<<32))/(uint64_t)(500000000));  // Convert frequency to 32-bit tuning word
+	uint8_t CFTW0_DATA[4] = {0x00,0x00,0x00,0x00};
+	uint32_t Temp;
+
+	//吸附
+	//应该可以避免AD9959_SNAPPING_GRID整数倍上的漂移，但是会略微降低对应位置的精度
+	#ifdef AD9959_USE_SNAPPING
+	if(Freq%AD9959_SNAPPING_GRID==0)
+	{
+		Temp=(((double)(((uint64_t)AD9959_SNAPPING_GRID)<<32))/(uint64_t)(500000000));
+		Temp=Temp*(Freq/AD9959_SNAPPING_GRID);
+	}
+	else
+	#endif
+	{
+		Temp = (((double)(((uint64_t)Freq)<<32))/(uint64_t)(500000000));  // Convert frequency to 32-bit tuning word
+	}
+	CFTW0_DATA[3] = (uint8_t)Temp;
+	CFTW0_DATA[2] = (uint8_t)(Temp>>8);
+	CFTW0_DATA[1] = (uint8_t)(Temp>>16);
+	CFTW0_DATA[0] = (uint8_t)(Temp>>24);
   
-  CFTW0_DATA[3] = (uint8_t)Temp;
-  CFTW0_DATA[2] = (uint8_t)(Temp>>8);
-  CFTW0_DATA[1] = (uint8_t)(Temp>>16);
-  CFTW0_DATA[0] = (uint8_t)(Temp>>24);
-  
-  if(Channel == 0)	  
-  {
-    WriteData_AD9959(CSR_ADD, 1, CSR_DATA0, 1); // Configure channel 0
-    WriteData_AD9959(CFTW0_ADD, 4, CFTW0_DATA, 1); // Set frequency
-  }
-  else if(Channel == 1)	
-  {
-    WriteData_AD9959(CSR_ADD, 1, CSR_DATA1, 1);
-    WriteData_AD9959(CFTW0_ADD, 4, CFTW0_DATA, 1);
-  }
-  else if(Channel == 2)	
-  {
-    WriteData_AD9959(CSR_ADD, 1, CSR_DATA2, 1);
-    WriteData_AD9959(CFTW0_ADD, 4, CFTW0_DATA, 1);
-  }
-  else if(Channel == 3)	
-  {
-    WriteData_AD9959(CSR_ADD, 1, CSR_DATA3, 1);
-    WriteData_AD9959(CFTW0_ADD, 4, CFTW0_DATA, 1);
-  }
+	if(Channel == 0)	  
+	{
+		WriteData_AD9959(CSR_ADD, 1, CSR_DATA0, 1); // Configure channel 0
+		WriteData_AD9959(CFTW0_ADD, 4, CFTW0_DATA, 1); // Set frequency
+	}
+	else if(Channel == 1)	
+	{
+		WriteData_AD9959(CSR_ADD, 1, CSR_DATA1, 1);
+		WriteData_AD9959(CFTW0_ADD, 4, CFTW0_DATA, 1);
+	}
+	else if(Channel == 2)	
+	{
+		WriteData_AD9959(CSR_ADD, 1, CSR_DATA2, 1);
+		WriteData_AD9959(CFTW0_ADD, 4, CFTW0_DATA, 1);
+	}
+	else if(Channel == 3)	
+	{
+		WriteData_AD9959(CSR_ADD, 1, CSR_DATA3, 1);
+		WriteData_AD9959(CFTW0_ADD, 4, CFTW0_DATA, 1);
+	}
 }
 
 /*---------------------------------------
@@ -319,7 +336,7 @@ uint8_t AD9959_Set_Freq(AD9959_HandleTypeDef* had9959, uint16_t channel, uint32_
 
 uint8_t AD9959_Set_Amp(AD9959_HandleTypeDef* had9959, uint16_t channel, uint16_t* data)
 {
-	uint16_t maxAmp=1024;
+	uint16_t maxAmp=1023;
 	if(channel<4)
 	{
 		had9959->amp[channel]=data[0]<=maxAmp? data[0]: maxAmp;

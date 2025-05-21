@@ -2,17 +2,18 @@
 #define _AD9959_H_
 #include "main.h"
 #include "stdint.h"
-//AD9959å¯„å­˜å™¨åœ°å€å®šä¹‰5
-#define CSR_ADD   0x00   //CSR é€šé“é€‰æ‹©å¯„å­˜å™¨
-#define FR1_ADD   0x01   //FR1 åŠŸèƒ½å¯„å­˜å™¨1
-#define FR2_ADD   0x02   //FR2 åŠŸèƒ½å¯„å­˜å™¨2
-#define CFR_ADD   0x03   //CFR é€šé“åŠŸèƒ½å¯„å­˜å™¨
-#define CFTW0_ADD 0x04   //CTW0 é€šé“é¢‘ç‡è½¬æ¢å­—å¯„å­˜å™¨
-#define CPOW0_ADD 0x05   //CPW0 é€šé“ç›¸ä½è½¬æ¢å­—å¯„å­˜å™¨
-#define ACR_ADD   0x06   //ACR å¹…åº¦æ§åˆ¶å¯„å­˜å™¨
-#define LSRR_ADD  0x07   //LSR é€šé“çº¿æ€§æ‰«æå¯„å­˜å™¨
-#define RDW_ADD   0x08   //RDW é€šé“çº¿æ€§å‘ä¸Šæ‰«æå¯„å­˜å™¨
-#define FDW_ADD   0x09   //FDW é€šé“çº¿æ€§å‘ä¸‹æ‰«æå¯„å­˜å™¨
+#include "AD9959_compens.H"
+//AD9959¼Ä´æÆ÷µØÖ·¶¨Òå
+#define CSR_ADD   0x00   //CSR Í¨µÀÑ¡Ôñ¼Ä´æÆ÷
+#define FR1_ADD   0x01   //FR1 ¹¦ÄÜ¼Ä´æÆ÷1
+#define FR2_ADD   0x02   //FR2 ¹¦ÄÜ¼Ä´æÆ÷2
+#define CFR_ADD   0x03   //CFR Í¨µÀ¹¦ÄÜ¼Ä´æÆ÷
+#define CFTW0_ADD 0x04   //CTW0 Í¨µÀÆµÂÊ×ª»»×Ö¼Ä´æÆ÷
+#define CPOW0_ADD 0x05   //CPW0 Í¨µÀÏàÎ»×ª»»×Ö¼Ä´æÆ÷
+#define ACR_ADD   0x06   //ACR ·ù¶È¿ØÖÆ¼Ä´æÆ÷
+#define LSRR_ADD  0x07   //LSR Í¨µÀÏßĞÔÉ¨Ãè¼Ä´æÆ÷
+#define RDW_ADD   0x08   //RDW Í¨µÀÏßĞÔÏòÉÏÉ¨Ãè¼Ä´æÆ÷
+#define FDW_ADD   0x09   //FDW Í¨µÀÏßĞÔÏòÏÂÉ¨Ãè¼Ä´æÆ÷
 
 #define AD9959_FREQ ((uint64_t)500000000)
 
@@ -47,8 +48,8 @@ extern AD9959_HandleTypeDef hAD9959;
 
 
 void delay1 (uint32_t length);
-void IntReset(void);	  //AD9959å¤ä½
-void AD9959_IO_Update(void);   //AD9959æ›´æ–°æ•°æ®
+void IntReset(void);	  //AD9959¸´Î»
+void AD9959_IO_Update(void);   //AD9959¸üĞÂÊı¾İ
 void WriteData_AD9959(uint8_t RegisterAddress, uint8_t NumberofRegisters, uint8_t *RegisterData,uint8_t temp);
 void Init_AD9959(void);
 void Write_frequence(uint8_t Channel,uint32_t Freq);

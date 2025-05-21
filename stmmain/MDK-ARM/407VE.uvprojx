@@ -808,6 +808,11 @@
               <FileType>1</FileType>
               <FilePath>..\Drivers\HARDWARE\AM_9959.c</FilePath>
             </File>
+            <File>
+              <FileName>AD9959_compens.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\HARDWARE\AD9959_compens.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
