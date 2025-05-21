@@ -7,7 +7,7 @@
 #define AD9959_COMP_MAX_F  2
 #define AD9959_COMP_MAP_SIZE 100
 
-#define AD9959_COMP_Q2F(q) ((((float)(q))/INT16_MAX)/AD9959_COMP_MAX_F)
+#define AD9959_COMP_Q2F(q) ((((float)(q))/UINT16_MAX)/AD9959_COMP_MAX_F)
 
 
 /*
