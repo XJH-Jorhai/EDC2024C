@@ -17,6 +17,7 @@ void AM_Instance_Init(AM_Instance* ham, AD9959_HandleTypeDef* had9959, uint16_t 
 	ham->CH_DAC=dac_channel;
 	ham->changeflag=0;
 	ham->min_amp=AD9959_GetMinAmp(0,40);
+	ham->MULT_FACTOR=0.2;
 }
 
 /*
@@ -63,12 +64,17 @@ uint8_t AM_ApplyChanges(AM_Instance* hamx[], uint16_t cnt)
 		AD9959_Set_Freq(hamx[i]->had9959, hamx[i]->CH_MW, &data32);
 		
 		
-		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_CW]);
+		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_CW]);//CW信号：输出补偿后最大值
 		data16=(uint16_t)datafloat;
 		
 		AD9959_Set_Amp(hamx[i]->had9959, hamx[i]->CH_CW, &data16);
 		
-		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_MW])*(hamx[i]->MDepth);
+		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_MW])*//信号最大幅度
+																								(hamx[i]->MDepth)*									//AM调制深度
+																								(hamx[i]->MULT_FACTOR)*						//乘法器上的加法部分比例
+																								1.0f;															//应该还要再乘一个常数用来补偿加法比例和实际输出幅度的差值
+		
+		
 		data16=(uint16_t)datafloat;
 
 		AD9959_Set_Amp(hamx[i]->had9959, hamx[i]->CH_MW, &data16);

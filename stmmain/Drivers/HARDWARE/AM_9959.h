@@ -31,6 +31,8 @@ typedef struct{
 	
 	float min_amp;//9959最小幅度比例
 	
+	float MULT_FACTOR;
+	
 	uint8_t changeflag;
 	
 }AM_Instance;
