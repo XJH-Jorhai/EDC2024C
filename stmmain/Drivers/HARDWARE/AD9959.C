@@ -357,7 +357,7 @@ uint8_t AD9959_Apply_Change(AD9959_HandleTypeDef* had9959)
 {
 	if(had9959->changeFlag==1)
 	{
-		syslog("Change Applied");
+		syslog("AD9959 Change Applied");
 		for(uint16_t i=0;i<4;i++)
 		{
 			Write_frequence(i,had9959->freq[i]);

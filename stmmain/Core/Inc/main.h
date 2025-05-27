@@ -72,6 +72,16 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
+#define HMC472_V5_Pin GPIO_PIN_2
+#define HMC472_V5_GPIO_Port GPIOE
+#define HMC472_V4_Pin GPIO_PIN_3
+#define HMC472_V4_GPIO_Port GPIOE
+#define HMC472_V3_Pin GPIO_PIN_4
+#define HMC472_V3_GPIO_Port GPIOE
+#define HMC472_V2_Pin GPIO_PIN_5
+#define HMC472_V2_GPIO_Port GPIOE
+#define HMC472_V1_Pin GPIO_PIN_6
+#define HMC472_V1_GPIO_Port GPIOE
 #define LED_Pin GPIO_PIN_0
 #define LED_GPIO_Port GPIOC
 #define AD9959_SD3_Pin GPIO_PIN_5
@@ -106,6 +116,8 @@ void Error_Handler(void);
 #define LCD_DC_GPIO_Port GPIOD
 #define LCD_CS_Pin GPIO_PIN_15
 #define LCD_CS_GPIO_Port GPIOA
+#define HMC472_V6_Pin GPIO_PIN_1
+#define HMC472_V6_GPIO_Port GPIOE
 
 /* USER CODE BEGIN Private defines */
 #define LED_ON HAL_GPIO_WritePin(LED_GPIO_Port,LED_Pin,GPIO_PIN_RESET)

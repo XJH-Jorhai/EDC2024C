@@ -31,6 +31,7 @@
 #include "AD9959.H"
 #include "AM_9959.h"
 #include "delay.h"
+#include "HMC472.h"
 
 /* USER CODE END Includes */
 
@@ -123,6 +124,13 @@ int main(void)
 	HAL_Delay(100);
   AD9959_IO_Update();
 	syslog("AD9959 Init Success");
+  
+	if(HMC472_Instance_Init(&hHMC,HMC472_POTRSDEF,HMC472_PINSDEF)==HAL_OK)
+	{
+		syslog("HMC472 Init Success");
+	}
+  
+  
 	syslog("Init Success");
   /* USER CODE END 2 */
 
@@ -158,6 +166,8 @@ int main(void)
 				{
 					amp=read1ByteFromRingBuffer(2);
 					sprintf(str,"EffValue changed to %d00mV",amp);syslog(str);
+					AM_SetCarrierAmp(&AM1,((float)amp)/10);
+					
 				} 
 				else if (operation_flag == 0x02)
 				{
@@ -180,6 +190,7 @@ int main(void)
 				{
 					atten=read1ByteFromRingBuffer(2);
 					sprintf(str,"Bsig atten changed to %ddb",atten);syslog(str);
+					HMC472_SetAtten(&hHMC,atten);
 				} 
 				else if (operation_flag == 0x05)
 				{
@@ -194,8 +205,9 @@ int main(void)
 			}
 		}
 	LED;
+	HMC472_ApplyAtten(&hHMC);
 	AM_ApplyChanges(AM_PTRS,2);
-	HAL_Delay(1);
+	HAL_Delay(50);
 	}
     /* USER CODE END WHILE */
 

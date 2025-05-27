@@ -128,60 +128,6 @@ float AD9959_AmpComps(float freq)
 
 
 
-typedef struct{
-	GPIO_TypeDef* PORTS[8];
-	uint16_t PINS[8];
-	uint16_t atten;
-	
-	
-}PLACEHOLDER;
-
-void PLACEHOLDER_WritePin(PLACEHOLDER* handle, uint8_t idx, uint8_t val)
-{
-	HAL_GPIO_WritePin(handle->PORTS[idx], handle->PINS[idx], val);
-}
-
-uint8_t PLACEHOLDER_Instance_Init(PLACEHOLDER* handle, GPIO_TypeDef* ports[], uint16_t pins[])
-{
-	for(uint8_t i=0;i<8;i++)
-	{
-		handle->PORTS[i]=ports[i];
-		handle->PINS[i]=pins[i];
-		PLACEHOLDER_WritePin(handle,i,0);
-	}
-	
-	return HAL_OK;
-}
-
-uint8_t PLACEHOLDER_SetAtten(PLACEHOLDER* handle, uint16_t dB)
-{
-	handle->atten=dB;
-	return HAL_OK;
-}
-
-uint8_t PLACEHOLDER_ApplyAtten(PLACEHOLDER* handle)
-{
-	uint16_t dB=handle->atten;
-	for(uint8_t i=8; i>0;i++)
-	{
-		if(dB > i)
-		{
-			dB-=i;
-			PLACEHOLDER_WritePin(handle, i-1, GPIO_PIN_SET);
-		}
-		else
-		{
-			PLACEHOLDER_WritePin(handle, i-1, GPIO_PIN_RESET);
-		}
-	}
-	
-	if(dB!=0)
-	{
-		return HAL_ERROR;
-	}
-	return HAL_OK;
-}
-
 
 
 

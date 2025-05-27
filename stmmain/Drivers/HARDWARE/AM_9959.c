@@ -17,7 +17,8 @@ void AM_Instance_Init(AM_Instance* ham, AD9959_HandleTypeDef* had9959, uint16_t 
 	ham->CH_DAC=dac_channel;
 	ham->changeflag=0;
 	ham->min_amp=AD9959_GetMinAmp(0,40);
-	ham->MULT_FACTOR=0.2;
+	ham->MULT_FACTOR=0.81;
+	ham->CW_amp=1.0f;
 }
 
 /*
@@ -64,7 +65,7 @@ uint8_t AM_ApplyChanges(AM_Instance* hamx[], uint16_t cnt)
 		AD9959_Set_Freq(hamx[i]->had9959, hamx[i]->CH_MW, &data32);
 		
 		
-		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_CW]);//CW信号：输出补偿后最大值
+		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_CW])*hamx[i]->CW_amp;//CW信号：输出补偿后最大值
 		data16=(uint16_t)datafloat;
 		
 		AD9959_Set_Amp(hamx[i]->had9959, hamx[i]->CH_CW, &data16);
@@ -106,6 +107,16 @@ uint8_t AM_ApplyChanges(AM_Instance* hamx[], uint16_t cnt)
 uint8_t AM_SetCarrierFreq(AM_Instance* hamx, uint32_t Cfreq)
 {
 	AD9959_Set_Freq(hamx->had9959,hamx->CH_CW,&Cfreq);
+	hamx->changeflag=1;
+	return HAL_OK;
+}
+
+/*
+设置hamx指向的AM实例的载波幅度比例
+*/
+uint8_t AM_SetCarrierAmp(AM_Instance* hamx, float Camp)
+{
+	hamx->CW_amp=Camp;
 	hamx->changeflag=1;
 	return HAL_OK;
 }

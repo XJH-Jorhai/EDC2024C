@@ -813,6 +813,16 @@
               <FileType>1</FileType>
               <FilePath>..\Drivers\HARDWARE\AD9959_compens.c</FilePath>
             </File>
+            <File>
+              <FileName>HMC472.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\HARDWARE\HMC472.c</FilePath>
+            </File>
+            <File>
+              <FileName>HMC472.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>..\Drivers\HARDWARE\HMC472.h</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

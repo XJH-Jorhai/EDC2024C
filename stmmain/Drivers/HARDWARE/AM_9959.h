@@ -19,6 +19,7 @@ typedef struct{
 	AD9959_HandleTypeDef* had9959;
 	uint8_t CH_MW;//载波（信号）
 	uint8_t CH_CW;//调制（高频）
+	float CW_amp;
 	
 	DAC_HandleTypeDef* hdac;
 	uint32_t CH_DAC;
@@ -27,7 +28,8 @@ typedef struct{
 	
 	float MDepth;//调制度
 	float TDelay;//延时
-	float amp;//幅度
+	
+	
 	
 	float min_amp;//9959最小幅度比例
 	
@@ -52,7 +54,7 @@ uint8_t AM_SetCarrierFreq(AM_Instance* hamx, uint32_t Cfreq);
 uint8_t AM_SetModulationFreq(AM_Instance* hamx, uint32_t Mfreq);
 uint8_t AM_SetMDepth(AM_Instance* hamx, float MD);
 uint8_t AM_SetTDelay(AM_Instance* hamx1, AM_Instance* hamx2, uint16_t TD);
-	
+uint8_t AM_SetCarrierAmp(AM_Instance* hamx, float Camp);
 
 
 #endif
