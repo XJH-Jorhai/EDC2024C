@@ -28,6 +28,7 @@ typedef struct{
 	
 	float MDepth;//调制度
 	float TDelay;//延时
+	float CM_phase;
 	
 	
 	
@@ -55,6 +56,6 @@ uint8_t AM_SetModulationFreq(AM_Instance* hamx, uint32_t Mfreq);
 uint8_t AM_SetMDepth(AM_Instance* hamx, float MD);
 uint8_t AM_SetTDelay(AM_Instance* hamx1, AM_Instance* hamx2, uint16_t TD);
 uint8_t AM_SetCarrierAmp(AM_Instance* hamx, float Camp);
-
+uint8_t AM_SetCMPhase(AM_Instance* hamx, float phase);
 
 #endif

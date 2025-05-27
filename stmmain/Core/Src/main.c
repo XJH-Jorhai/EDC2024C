@@ -196,6 +196,8 @@ int main(void)
 				{
 					sphase=read1ByteFromRingBuffer(2);
 					sprintf(str,"Bsig delay changed to %d0°",sphase);syslog(str);
+					AM_SetCMPhase(&AM1,sphase*10);
+					AM_SetCMPhase(&AM2,sphase*10);
 				} 
 				deleteRingBuffer(7); 
 			} else

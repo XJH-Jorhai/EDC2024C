@@ -19,6 +19,7 @@ void AM_Instance_Init(AM_Instance* ham, AD9959_HandleTypeDef* had9959, uint16_t 
 	ham->min_amp=AD9959_GetMinAmp(0,40);
 	ham->MULT_FACTOR=0.81;
 	ham->CW_amp=1.0f;
+	ham->CM_phase=0;
 }
 
 /*
@@ -57,7 +58,7 @@ uint8_t AM_ApplyChanges(AM_Instance* hamx[], uint16_t cnt)
 		datafloat=((double)(hamx[i]->had9959->freq[hamx[i]->CH_MW])*360*(hamx[i]->TDelay)/1000000000);
 		AD9959_Set_Phase(hamx[i]->had9959,hamx[i]->CH_MW,&datafloat);
 
-		datafloat=((double)(hamx[i]->had9959->freq[hamx[i]->CH_CW])*360*(hamx[i]->TDelay)/1000000000);
+		datafloat=((double)(hamx[i]->had9959->freq[hamx[i]->CH_CW])*360*(hamx[i]->TDelay)/1000000000 + hamx[i]->CM_phase);
 		AD9959_Set_Phase(hamx[i]->had9959,hamx[i]->CH_CW,&datafloat);
 		
 				
@@ -128,6 +129,16 @@ uint8_t AM_SetCarrierAmp(AM_Instance* hamx, float Camp)
 uint8_t AM_SetModulationFreq(AM_Instance* hamx, uint32_t Mfreq)
 {
 	AD9959_Set_Freq(hamx->had9959,hamx->CH_MW,&Mfreq);
+	hamx->changeflag=1;
+	return HAL_OK;
+}
+
+/*
+设置hamx指向的AM实例的基波相位
+*/
+uint8_t AM_SetCMPhase(AM_Instance* hamx, float phase)
+{
+	hamx->CM_phase=phase;
 	hamx->changeflag=1;
 	return HAL_OK;
 }
