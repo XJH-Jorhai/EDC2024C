@@ -1,7 +1,34 @@
 
 #include "AM_9959.h"
 
+
+
 AM_Instance AM1,AM2;
+
+const uint16_t vga_map_1[10]={
+	215,
+	360,
+	449,
+	510,
+	555,
+	594,
+	630,
+	660,
+	683,
+	709,
+};
+const uint16_t vga_map_2[10]={
+	215,
+	360,
+	449,
+	510,
+	555,
+	594,
+	630,
+	660,
+	683,
+	709,
+};
 /*
 初始化AM实例
 */
@@ -188,16 +215,23 @@ uint8_t SetDAC(AM_Instance* hamx, uint16_t val)
 }
 
 /*
-根据拟合公式，计算出要求输出有效值的VGA控制电压
+根据拟合公式或表格，计算出要求输出有效值的VGA控制电压
 amp:  期望输出有效值，单位mV
 */
 
 uint16_t Amp_to_dac(float amp,uint8_t i) {
+ // 1. 将输入幅度吸附到最近的100mV步进值（100mV-1000mV）
+	uint8_t index = (uint8_t)((roundf(amp / 100.0f) - 1.0f)); // 先四舍五入再转索引
+	
+	// 2. 边界保护（确保索引在0-9范围内）
+	if (amp < 50.0f)  index = 0;    // 低于50mV强制设为100mV档
+	if (amp > 1050.0f) index = 9;    // 超过1050mV强制设为1000mV档
+	if (index > 9)     index = 9;    // 双重保护
 	switch(i){
 		case 0:
-		return 213.66*logf(amp) - 570.99;break;
+			return vga_map_1[index];break; // 只试了这一个，还有另一个通道没试，太痛苦了
 		case 1:
-		return 217.53*logf(amp) - 536.27;break;
+			return vga_map_2[index];break;
 		default:
 		return 0;
 	}

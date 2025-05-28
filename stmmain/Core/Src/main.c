@@ -167,8 +167,8 @@ int main(void)
 				{
 					amp=read1ByteFromRingBuffer(2);
 					sprintf(str,"EffValue changed to %d00mV",amp);syslog(str);
-					AM_SetCarrierAmp(&AM1,((float)amp*50));
-					AM_SetCarrierAmp(&AM2,((float)amp*50));
+					AM_SetCarrierAmp(&AM1,((float)amp*100));
+					AM_SetCarrierAmp(&AM2,((float)amp*100));
 				} 
 				else if (operation_flag == 0x02)
 				{
