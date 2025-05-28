@@ -27,9 +27,9 @@ AD9959_HandleTypeDef hAD9959;
 //AD9959≥ı ºªØ
 void Init_AD9959(void)  
 { 
-	uint32_t SinFre[4]={1000000,1000000,1000000,1000000};
+	uint32_t SinFre[4]={30000000,2000000,30000000,2000000};
 	float SinPhr[4]={0,0,0,0};
-	uint16_t SinAmp[4]={1023,1023,1023,1023};
+	uint16_t SinAmp[4]={1023,0,1023,0};
 	for(uint16_t i=0;i<4;i++)
 	{
 		hAD9959.amp[i]=SinAmp[i];

@@ -76,8 +76,8 @@ void MX_GPIO_Init(void)
   /*Configure GPIO pin Output Level */
   HAL_GPIO_WritePin(LCD_CS_GPIO_Port, LCD_CS_Pin, GPIO_PIN_SET);
 
-  /*Configure GPIO pins : PEPin PEPin PEPin PEPin
-                           PEPin PEPin */
+  /*Configure GPIO pins : HMC472_V5_Pin HMC472_V4_Pin HMC472_V3_Pin HMC472_V2_Pin
+                           HMC472_V1_Pin HMC472_V6_Pin */
   GPIO_InitStruct.Pin = HMC472_V5_Pin|HMC472_V4_Pin|HMC472_V3_Pin|HMC472_V2_Pin
                           |HMC472_V1_Pin|HMC472_V6_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -85,29 +85,29 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PtPin */
+  /*Configure GPIO pin : LED_Pin */
   GPIO_InitStruct.Pin = LED_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PtPin */
+  /*Configure GPIO pin : AD9959_SD3_Pin */
   GPIO_InitStruct.Pin = AD9959_SD3_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(AD9959_SD3_GPIO_Port, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PBPin PBPin PBPin PBPin */
+  /*Configure GPIO pins : AD9959_SD2_Pin AD9959_SCK_Pin AD9959_SD1_Pin AD9959_P0_Pin */
   GPIO_InitStruct.Pin = AD9959_SD2_Pin|AD9959_SCK_Pin|AD9959_SD1_Pin|AD9959_P0_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PEPin PEPin PEPin PEPin
-                           PEPin PEPin PEPin PEPin */
+  /*Configure GPIO pins : AD9959_CS_Pin AD9959_SD0_Pin AD9959_UP_Pin AD9959_P3_Pin
+                           AD9959_RST_Pin AD9959_P2_Pin AD9959_PDC_Pin AD9959_P1_Pin */
   GPIO_InitStruct.Pin = AD9959_CS_Pin|AD9959_SD0_Pin|AD9959_UP_Pin|AD9959_P3_Pin
                           |AD9959_RST_Pin|AD9959_P2_Pin|AD9959_PDC_Pin|AD9959_P1_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
@@ -115,14 +115,14 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
 
-  /*Configure GPIO pins : PDPin PDPin */
+  /*Configure GPIO pins : LCD_Backlight_Pin LCD_DC_Pin */
   GPIO_InitStruct.Pin = LCD_Backlight_Pin|LCD_DC_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
   HAL_GPIO_Init(GPIOD, &GPIO_InitStruct);
 
-  /*Configure GPIO pin : PtPin */
+  /*Configure GPIO pin : LCD_CS_Pin */
   GPIO_InitStruct.Pin = LCD_CS_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;

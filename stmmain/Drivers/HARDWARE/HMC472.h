@@ -8,7 +8,7 @@
 typedef struct{
 	GPIO_TypeDef* PORTS[8];
 	uint16_t PINS[8];
-	uint16_t atten;
+	float atten;
 	uint8_t changeflag;
 	
 }HMC472_Instance;
@@ -21,7 +21,7 @@ extern HMC472_Instance hHMC;
 
 
 uint8_t HMC472_Instance_Init(HMC472_Instance* handle, const GPIO_TypeDef* ports[], const uint16_t pins[]);
-uint8_t HMC472_SetAtten(HMC472_Instance* handle, uint16_t dB);
+uint8_t HMC472_SetAtten(HMC472_Instance* handle, float dB);
 uint8_t HMC472_ApplyAtten(HMC472_Instance* handle);
 
 

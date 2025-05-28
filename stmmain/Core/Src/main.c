@@ -79,6 +79,7 @@ void SystemClock_Config(void);
   */
 int main(void)
 {
+
   /* USER CODE BEGIN 1 */
 
   /* USER CODE END 1 */
@@ -147,7 +148,7 @@ int main(void)
 		{
 			
 			if (getRingBufferLength() >= FRAME_LENGTH && 
-				read1ByteFromRingBuffer(0) == 0x55 && 
+			read1ByteFromRingBuffer(0) == 0x55 && 
 			read1ByteFromRingBuffer(4) == 0xFF && 
 			read1ByteFromRingBuffer(5) == 0xFF &&
 			read1ByteFromRingBuffer(6) == 0xFF)//检查帧头及帧尾
@@ -166,8 +167,8 @@ int main(void)
 				{
 					amp=read1ByteFromRingBuffer(2);
 					sprintf(str,"EffValue changed to %d00mV",amp);syslog(str);
-					AM_SetCarrierAmp(&AM1,((float)amp)/10);
-					AM_SetCarrierAmp(&AM2,((float)amp)/10);
+					AM_SetCarrierAmp(&AM1,((float)amp*50));
+					AM_SetCarrierAmp(&AM2,((float)amp*50));
 				} 
 				else if (operation_flag == 0x02)
 				{
@@ -195,8 +196,8 @@ int main(void)
 				else if (operation_flag == 0x05)
 				{
 					sphase=read1ByteFromRingBuffer(2);
-					sprintf(str,"Bsig delay changed to %d0°",sphase);syslog(str);
-					AM_SetCMPhase(&AM1,sphase*10);
+					sprintf(str,"Bsig sphase changed to %d0°",sphase);syslog(str);
+					//AM_SetCMPhase(&AM1,sphase*10);
 					AM_SetCMPhase(&AM2,sphase*10);
 				} 
 				deleteRingBuffer(7); 

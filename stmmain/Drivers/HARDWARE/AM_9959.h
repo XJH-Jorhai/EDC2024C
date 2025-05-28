@@ -57,5 +57,5 @@ uint8_t AM_SetMDepth(AM_Instance* hamx, float MD);
 uint8_t AM_SetTDelay(AM_Instance* hamx1, AM_Instance* hamx2, uint16_t TD);
 uint8_t AM_SetCarrierAmp(AM_Instance* hamx, float Camp);
 uint8_t AM_SetCMPhase(AM_Instance* hamx, float phase);
-
+uint16_t Amp_to_dac(float gain,uint8_t i);
 #endif

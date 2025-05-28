@@ -1,7 +1,6 @@
 
 #include "AM_9959.h"
 
-
 AM_Instance AM1,AM2;
 /*
 初始化AM实例
@@ -27,9 +26,13 @@ void AM_Instance_Init(AM_Instance* ham, AD9959_HandleTypeDef* had9959, uint16_t 
 */
 uint8_t AM_Init(void)
 {
-	HAL_DAC_Init(&hdac);
-	HAL_DACEx_DualSetValue(&AM_DAC_HANDLE,0,0,0);
-	HAL_DACEx_DualStart(&AM_DAC_HANDLE);
+//	HAL_DAC_Init(&hdac);
+//	HAL_DACEx_DualSetValue(&AM_DAC_HANDLE,0,0,0);
+//	HAL_DACEx_DualStart(&AM_DAC_HANDLE);
+	HAL_DAC_SetValue(&hdac, DAC_CHANNEL_1, DAC_ALIGN_12B_R, (uint16_t)0.5/3.3*4096);
+	HAL_DAC_SetValue(&hdac, DAC_CHANNEL_2, DAC_ALIGN_12B_R, (uint16_t)0.5/3.3*4096);
+	HAL_DAC_Start(&hdac,DAC_CHANNEL_1);
+	HAL_DAC_Start(&hdac,DAC_CHANNEL_2);
 	AM_Instance_Init(&AM1,&hAD9959,0,1,&hdac,DAC_CHANNEL_1);
 	AM_Instance_Init(&AM2,&hAD9959,2,3,&hdac,DAC_CHANNEL_2);
 	
@@ -54,22 +57,27 @@ uint8_t AM_ApplyChanges(AM_Instance* hamx[], uint16_t cnt)
 	
 	for(uint16_t i=0;i<cnt;i++)
 	{
-		
-		datafloat=((double)(hamx[i]->had9959->freq[hamx[i]->CH_MW])*360*(hamx[i]->TDelay)/1000000000);
+
+		datafloat= ((double)(hamx[i]->had9959->freq[hamx[i]->CH_MW])*360.0*(hamx[i]->TDelay)/1000000000);
+		datafloat= fmodf(-fmodf(datafloat, 360.0f) + 360.0f, 360.0f);
 		AD9959_Set_Phase(hamx[i]->had9959,hamx[i]->CH_MW,&datafloat);
 
-		datafloat=((double)(hamx[i]->had9959->freq[hamx[i]->CH_CW])*360*(hamx[i]->TDelay)/1000000000 + hamx[i]->CM_phase);
+		datafloat= ((double)(hamx[i]->had9959->freq[hamx[i]->CH_CW])*360*(hamx[i]->TDelay)/1000000000);
+		datafloat= fmodf(-fmodf(datafloat, 360.0f) + 360.0f, 360.0f);
+		datafloat+= hamx[i]->CM_phase;
+		datafloat= fmodf(datafloat,360.0f);
 		AD9959_Set_Phase(hamx[i]->had9959,hamx[i]->CH_CW,&datafloat);
-		
+	
 				
 		data32=2000000;
 		AD9959_Set_Freq(hamx[i]->had9959, hamx[i]->CH_MW, &data32);
 		
 		
-		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_CW])*hamx[i]->CW_amp;//CW信号：输出补偿后最大值
+		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_CW]);//CW信号：输出补偿后最大值
 		data16=(uint16_t)datafloat;
 		
 		AD9959_Set_Amp(hamx[i]->had9959, hamx[i]->CH_CW, &data16);
+		SetDAC(hamx[i],Amp_to_dac(hamx[i]->CW_amp,i));
 		
 		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_MW])*//信号最大幅度
 																								(hamx[i]->MDepth)*									//AM调制深度
@@ -169,12 +177,31 @@ uint8_t AM_SetTDelay(AM_Instance* hamx1, AM_Instance* hamx2, uint16_t TD)
 
 uint8_t SetDAC(AM_Instance* hamx, uint16_t val)
 {
-	HAL_DAC_SetValue(hamx->hdac,hamx->CH_DAC,DAC_ALIGN_12B_R,val>4096?4096:val);
-	DAC_Trigger(&hdac);
+	if(hamx->changeflag==1){
+		HAL_DAC_SetValue(hamx->hdac,hamx->CH_DAC,DAC_ALIGN_12B_R,val>4096?4096:val);
+		DAC_Trigger(&hdac);
+		char inst[24];
+		sprintf(inst,"dac set to %d",val);
+		syslog(inst);
+  }
 	return HAL_OK;
 }
 
+/*
+根据拟合公式，计算出要求输出有效值的VGA控制电压
+amp:  期望输出有效值，单位mV
+*/
 
+uint16_t Amp_to_dac(float amp,uint8_t i) {
+	switch(i){
+		case 0:
+		return 213.66*logf(amp) - 570.99;break;
+		case 1:
+		return 217.53*logf(amp) - 536.27;break;
+		default:
+		return 0;
+	}
+}
 
 
 

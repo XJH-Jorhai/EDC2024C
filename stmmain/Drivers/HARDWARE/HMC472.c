@@ -43,7 +43,7 @@ uint8_t HMC472_Instance_Init(HMC472_Instance* handle, const GPIO_TypeDef* ports[
 	return HAL_OK;
 }
 
-uint8_t HMC472_SetAtten(HMC472_Instance* handle, uint16_t dB)
+uint8_t HMC472_SetAtten(HMC472_Instance* handle, float dB)
 {
 	handle->atten=dB;
 	handle->changeflag=1;
@@ -56,28 +56,23 @@ uint8_t HMC472_ApplyAtten(HMC472_Instance* handle)
 	{
 		
 		handle->changeflag=0;
-		uint16_t dB=handle->atten;
-		for(uint8_t i=6; i>0;i--)
-		{
-			if(dB >= i)
-			{
-				dB-=i;
-				HMC472_WritePin(handle, i-1, GPIO_PIN_SET);
-			}
-			else
-			{
-				HMC472_WritePin(handle, i-1, GPIO_PIN_RESET);
-			}
-		}
+		//将0.5-31.5范围等效为1-63方便引脚操作
+		uint16_t dB = (uint16_t)(handle->atten * 2 + 0.5f); // 标准四舍五入
 		
-		if(dB!=0)
+		if(dB>63)
 		{
 			syslog("HMC472 atten out of rng");
 			return HAL_ERROR;
+		}
+		
+		for(int i=0;i<6;i++){
+			HMC472_WritePin(handle, i, !((dB >> i) & 0x01));
 		}
 		syslog("HMC472 Change Applied");
 	}
 
 	return HAL_OK;
 }
+
+
 
