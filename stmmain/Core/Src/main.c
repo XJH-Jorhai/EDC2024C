@@ -131,6 +131,10 @@ int main(void)
 		syslog("HMC472 Init Success");
 	}
   
+					AM_SetMDepth(&AM1,0);
+					AM_SetMDepth(&AM2,0);
+	
+	HMC472_SetAtten(&hHMC,0);
   
 	syslog("Init Success");
   /* USER CODE END 2 */
@@ -162,6 +166,9 @@ int main(void)
 					uint32_t cfreq=freq*1000000;
 					AM_SetCarrierFreq(&AM1, cfreq);
 					AM_SetCarrierFreq(&AM2, cfreq);
+					
+//					AM_SetCarrierAmp(&AM1,AM1.CW_amp+200);
+//					AM_SetCarrierAmp(&AM2,AM2.CW_amp+200);
 				} 
 				else if (operation_flag == 0x01)
 				{
@@ -169,6 +176,9 @@ int main(void)
 					sprintf(str,"EffValue changed to %d00mV",amp);syslog(str);
 					AM_SetCarrierAmp(&AM1,((float)amp*100));
 					AM_SetCarrierAmp(&AM2,((float)amp*100));
+					
+//					AM_SetCarrierAmp(&AM1,AM1.CW_amp-200);
+//					AM_SetCarrierAmp(&AM2,AM2.CW_amp-200);
 				} 
 				else if (operation_flag == 0x02)
 				{
@@ -178,6 +188,9 @@ int main(void)
 					float MD=((float)md)/100;
 					AM_SetMDepth(&AM1,MD);
 					AM_SetMDepth(&AM2,MD);
+					
+//					AM_SetCarrierAmp(&AM1,AM1.CW_amp+20);
+//					AM_SetCarrierAmp(&AM2,AM2.CW_amp+20);
 				} 
 				else if (operation_flag == 0x03)
 				{
@@ -186,19 +199,28 @@ int main(void)
 					
 					uint16_t TD=tdelay*10;
 					AM_SetTDelay(&AM1,&AM2,TD);
+					
+//					AM_SetCarrierAmp(&AM1,AM1.CW_amp-20);
+//					AM_SetCarrierAmp(&AM2,AM2.CW_amp-20);
 				} 
 				else if (operation_flag == 0x04)
 				{
 					atten=read1ByteFromRingBuffer(2);
 					sprintf(str,"Bsig atten changed to %ddb",atten);syslog(str);
 					HMC472_SetAtten(&hHMC,atten);
+					
+//					AM_SetCarrierAmp(&AM1,AM1.CW_amp+1);
+//					AM_SetCarrierAmp(&AM2,AM2.CW_amp+1);
 				} 
 				else if (operation_flag == 0x05)
 				{
 					sphase=read1ByteFromRingBuffer(2);
 					sprintf(str,"Bsig sphase changed to %d0°",sphase);syslog(str);
-					//AM_SetCMPhase(&AM1,sphase*10);
+//					AM_SetCMPhase(&AM1,sphase*10);
 					AM_SetCMPhase(&AM2,sphase*10);
+					
+//					AM_SetCarrierAmp(&AM1,AM1.CW_amp-1);
+//					AM_SetCarrierAmp(&AM2,AM2.CW_amp-1);
 				} 
 				deleteRingBuffer(7); 
 			} else
@@ -210,7 +232,7 @@ int main(void)
 	LED;
 	HMC472_ApplyAtten(&hHMC);
 	AM_ApplyChanges(AM_PTRS,2);
-	HAL_Delay(50);
+	HAL_Delay(5);
 	}
     /* USER CODE END WHILE */
 
