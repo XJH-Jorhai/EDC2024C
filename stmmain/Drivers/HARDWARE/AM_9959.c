@@ -6,28 +6,31 @@
 AM_Instance AM1,AM2;
 
 const uint16_t vga_map_1[10]={
-	215,
-	360,
-	449,
-	510,
-	555,
-	594,
-	630,
-	660,
-	683,
-	709,
+//	215,
+//	360,
+//	449,
+//	510,
+//	555,
+//	594,
+//	630,
+//	660,
+//	683,
+//	709,
+
+	218,362,451,515,560,607,640,668,692,716
 };
 const uint16_t vga_map_2[10]={
-	215,
-	360,
-	449,
-	510,
-	555,
-	594,
-	630,
-	660,
-	683,
-	709,
+//	215,
+//	360,
+//	449,
+//	510,
+//	555,
+//	594,
+//	630,
+//	660,
+//	683,
+//	709,
+	278,429,518,579,633,672,704,732,757,785
 };
 /*
 初始化AM实例
@@ -62,7 +65,6 @@ uint8_t AM_Init(void)
 	HAL_DAC_Start(&hdac,DAC_CHANNEL_2);
 	AM_Instance_Init(&AM1,&hAD9959,0,1,&hdac,DAC_CHANNEL_1);
 	AM_Instance_Init(&AM2,&hAD9959,2,3,&hdac,DAC_CHANNEL_2);
-	
 	
 	
 	
@@ -104,7 +106,6 @@ uint8_t AM_ApplyChanges(AM_Instance* hamx[], uint16_t cnt)
 		data16=(uint16_t)datafloat;
 		
 		AD9959_Set_Amp(hamx[i]->had9959, hamx[i]->CH_CW, &data16);
-		SetDAC(hamx[i],Amp_to_dac(hamx[i]->CW_amp,i));
 		
 		datafloat=(hamx[i]->min_amp*1023)*AD9959_AmpComps(hamx[i]->had9959->freq[hamx[i]->CH_MW])*//信号最大幅度
 																								(hamx[i]->MDepth)*									//AM调制深度
@@ -116,6 +117,9 @@ uint8_t AM_ApplyChanges(AM_Instance* hamx[], uint16_t cnt)
 
 		AD9959_Set_Amp(hamx[i]->had9959, hamx[i]->CH_MW, &data16);
 		
+		
+		SetDAC(hamx[i],Amp_to_dac(hamx[i]->CW_amp,i));
+//		SetDAC(hamx[i],hamx[i]->CW_amp);
 
 	}
 
@@ -152,6 +156,8 @@ uint8_t AM_SetCarrierFreq(AM_Instance* hamx, uint32_t Cfreq)
 */
 uint8_t AM_SetCarrierAmp(AM_Instance* hamx, float Camp)
 {
+//	char str[30];
+//	sprintf(str,"ADC=%d",(uint16_t)Camp);syslog(str);
 	hamx->CW_amp=Camp;
 	hamx->changeflag=1;
 	return HAL_OK;
